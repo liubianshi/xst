@@ -2,3 +2,5 @@
 xst
 config.h
 .direnv
+*.rej
+*.orig
