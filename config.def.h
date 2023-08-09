@@ -5,10 +5,12 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
+static char *font = "monospace:pixelsize=32:antialias=true:autohint=true";
+
+/* Spare fonts */
 static char *font2[] = {
-/*	"Inconsolata for Powerline:pixelsize=12:antialias=true:autohint=true", */
-/*	"Hack Nerd Font Mono:pixelsize=11:antialias=true:autohint=true", */
+    "LXGW WenKai Mono:pixelsize=32:antialias=true:autohint:false:hint:ture:hintstyle:hintfull", 
+    "FiraCode Nerd Font Mono:pixelsize=28:antialias=true:autohint:false:hint:ture:hintstyle:hintfull", 
 };
 
 /* disable bold, italic and roman fonts globally */
@@ -56,8 +58,8 @@ char *stty_args = "stty raw pass8 nl -echo -iexten -cstopb 38400";
 char *vtiden = "\033[?6c";
 
 /* Kerning / character bounding-box multipliers */
-static float cwscale = 1.0;
-static float chscale = 1.0;
+static float cwscale = 1.02;
+static float chscale = 1.5;
 
 /*
  * word delimiter string
@@ -103,11 +105,11 @@ static unsigned int cursorthickness = 2;
  *    Bold affects lines thickness if boxdraw_bold is not 0. Italic is ignored.
  * 0: disable (render all U25XX glyphs normally from the font).
  */
-int boxdraw = 0;
-int boxdraw_bold = 0;
+int boxdraw = 1;
+int boxdraw_bold = 1;
 
 /* braille (U28XX):  1: render as adjacent "pixels",  0: use font */
-int boxdraw_braille = 0;
+int boxdraw_braille = 1;
 
 /*
  * 0: inherit depth from the root window
@@ -142,7 +144,7 @@ char *termname = "xst-256color";
 unsigned int tabspaces = 8;
 
 /* bg opacity */
-float alpha = 1.0;
+float alpha = 0.9;
 
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
@@ -241,8 +243,16 @@ static MouseShortcut mshortcuts[] = {
 };
 
 /* Command for opening url in browser */
-static char *openurlcmd[] = {"/bin/sh", "-c", "xurls | eval dmenu $(dmenu_options) | xargs -r $BROWSER",
-                             "externalpipe", NULL};
+static char *openurlcmd[] = { "/bin/sh", "-c",
+	"xurls | dmenu  -i -p 'Follow which url?' -l 10  | xargs -r $BROWSER",
+	"externalpipe", NULL };
+static char *copyurlcmd[] = { "/bin/sh", "-c",
+	"xurls | dmenu  -i -p 'Copy which url?' -l 10 | tr -d '\n' | xclip -selection clipboard ",
+	"externalpipe", NULL };
+static char *copyoutput[] = { "/bin/sh", "-c", "st-copyout", "externalpipe", NULL };
+
+static char *editscreen[] = { "/bin/sh", "-c", "st-editscreen", "externalpipe", "NULL" };
+
 
 /* Internal keyboard shortcuts. */
 #define MODKEY Mod1Mask
@@ -264,7 +274,10 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
 	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
 	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
-	{ MODKEY,               'u',            externalpipe,   {.v = openurlcmd } },
+	{ TERMMOD,              XK_E,           externalpipe,   {.v = editscreen } },
+	{ TERMMOD,              XK_L,           externalpipe,   {.v = openurlcmd } },
+	{ TERMMOD,              XK_Y,           externalpipe,   {.v = copyurlcmd } },
+	{ TERMMOD,              XK_O,           externalpipe,   {.v = copyoutput } },
 };
 
 /*
